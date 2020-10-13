@@ -1,0 +1,29 @@
+---
+os: linux
+dist: xenial
+
+language: python
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+
+install:
+  - |
+    pip3 install -r requirements.txt && \
+    pip3 install -r dev_requirements.txt
+script:
+  - |
+    python3 -m yapf --quiet --style "{based_on_style: pep8, blank_line_before_nested_class_or_def: true, indent_dictionary_value: true, dedent_closing_brackets: true, column_limit: 99}" --recursive {{cookiecutter.package_name}}
+  # uncomment once the tests are written
+  # - python3 -m pytest -sv --cov={{cookiecutter.package_name}} --cov-fail-under=60
+  - python3 -m flake8 --disable-noqa {{cookiecutter.package_name}}
+  - mypy {{cookiecutter.package_name}}
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: bash .travis/deploy.sh
+  on:
+    branch: main
+
